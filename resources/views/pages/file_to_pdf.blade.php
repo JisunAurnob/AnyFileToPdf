@@ -12,16 +12,37 @@
                         {{ $errormsg }}
                     @endif
                 </span>
-                {{-- <div class="mb-3">
-                    <label for="fileName" class="form-label">File Name</label>
-                    <input type="text" class="form-control" id="fileName" placeholder="Enter File Title" name="fileName"
-                        value="{{ old('fileName') }}" class="form-control">
-                    @error('fileName')
+                <div class="row">
+                <div class="col-md-6">
+                    <label for="paperSize" class="form-label">Select A Paper</label>
+                        <select class="form-select form-select-sm mb-3" name="paperSize" id="paperSize">
+                            {{-- <option selected>Open this select menu</option> --}}
+                            <option value="a4">A4</option>
+                            <option value="letter">Letter</option>
+                            <option value="a0">A0</option>
+                            <option value="a1">A1</option>
+                            <option value="a2">A2</option>
+                            <option value="a3">A3</option>
+                          </select>
+                    @error('paperSize')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                </div> --}}
+                </div>
+                <div class="col-md-6">
+                    <label for="orientation" class="form-label">Select Orientation</label>
+                        <select class="form-select form-select-sm mb-3" name="orientation" id="orientation">
+                            {{-- <option selected>Open this select menu</option> --}}
+                            <option value="portrait">Portrait</option>
+                            <option value="landscape">Landscape</option>
+
+                          </select>
+                    @error('paperSize')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
                 <div class="mb-3">
-                    <label for="formFile" class="form-label">Select A File (.xlsx, .doc, docx, jpg, jpeg, png, gif Only)</label>
+                    <label for="formFile" class="form-label">Select A File (.xlsx, docx, jpg, jpeg, png, gif Only)</label>
                     <input class="form-control" type="file" id="formFile" name="officeFile">
                     @error('officeFile')
                         <span class="text-danger">{{ $message }}</span>

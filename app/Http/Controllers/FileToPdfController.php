@@ -19,7 +19,7 @@ class FileToPdfController extends Controller
 
         $request->validate(
             [
-                'officeFile' => 'required|mimes:xlsx,doc,docx,jpg,jpeg,png,gif|max:50000'
+                'officeFile' => 'required|mimes:xlsx,docx,jpg,jpeg,png,gif|max:50000'
 
             ],
             [
@@ -32,27 +32,31 @@ class FileToPdfController extends Controller
         if ($request->submitPreview == "Convert & Preview") {
             
             if(($request->file('officeFile')->extension())=='xlsx'){
-                $pdf = $this->excel_to_pdf($request->file('officeFile'));
+                $pdf = $this->excel_to_pdf($request->file('officeFile'),$request->paperSize, $request->orientation);
                 return $pdf->stream('Converted By Jconverter.pdf');
             }
-            elseif(($request->file('officeFile')->extension())=='docx' || ($request->file('officeFile')->extension())=='doc'){
+            elseif(($request->file('officeFile')->extension())=='docx'){
                 $this->word_to_pdf($request->file('officeFile'));
                 return response()->file(public_path('Converted By Jconverter.pdf'));
             }
             elseif(($request->file('officeFile')->extension())=='jpg' || ($request->file('officeFile')->extension())=='jpeg' || ($request->file('officeFile')->extension())=='png' || ($request->file('officeFile')->extension())=='gif'){
-                $pdf = $this->image_to_pdf($request->file('officeFile'));
+                $pdf = $this->image_to_pdf($request->file('officeFile'),$request->paperSize, $request->orientation);
                 return $pdf->stream('Converted By Jconverter.pdf');
             }
 
         } 
         elseif ($request->submitDownload == "Convert & Download") {
             if(($request->file('officeFile')->extension())=='xlsx'){
-                $pdf = $this->excel_to_pdf($request->file('officeFile'));
+                $pdf = $this->excel_to_pdf($request->file('officeFile'),$request->paperSize, $request->orientation);
                 return $pdf->download('Converted By Jconverter.pdf');
             }
-            elseif(($request->file('officeFile')->extension())=='docx' || ($request->file('officeFile')->extension())=='doc'){
+            elseif(($request->file('officeFile')->extension())=='docx'){
                 $this->word_to_pdf($request->file('officeFile'));
                 return response()->download(public_path('Converted By Jconverter.pdf'));
+            }
+            elseif(($request->file('officeFile')->extension())=='jpg' || ($request->file('officeFile')->extension())=='jpeg' || ($request->file('officeFile')->extension())=='png' || ($request->file('officeFile')->extension())=='gif'){
+                $pdf = $this->image_to_pdf($request->file('officeFile'),$request->paperSize, $request->orientation);
+                return $pdf->download('Converted By Jconverter.pdf');
             }
         } 
         // else {
@@ -62,13 +66,13 @@ class FileToPdfController extends Controller
     }
 
 
-    public function excel_to_pdf($excelFile){
+    public function excel_to_pdf($excelFile, $paperSize, $orientation){
         $collection  = Excel::toCollection(new ExcelImport, $excelFile);
         $pdf = PDF::setOptions([
             // 'isHtml5ParserEnabled' => true,
             // 'isRemoteEnabled' => true,
             'defaultFont' => 'sans-serif'
-        ])->setPaper('a2', 'landscape')
+        ])->setPaper($paperSize, $orientation)
             ->loadView('pages.pdf_view_excel', ['excelData' => $collection]);
         return $pdf;
     }
@@ -84,13 +88,13 @@ class FileToPdfController extends Controller
 
         return $PDFWriter;
     }
-    public function image_to_pdf($imageFile){
+    public function image_to_pdf($imageFile, $paperSize, $orientation){
         $imageFile->move("Temp", 'zzz.jpg');
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
             // 'defaultFont' => 'sans-serif'
-        ])->setPaper('a4', 'portrait')->loadView('pages.pdf_view_image');
+        ])->setPaper($paperSize, $orientation)->loadView('pages.pdf_view_image');
         return $pdf;
     }
 }
